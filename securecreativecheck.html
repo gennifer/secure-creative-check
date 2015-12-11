@@ -2,20 +2,29 @@
     <head>
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js" ></script>
         <style>
+        #calls {
+            font-weight: bold;
+        }
         #urlhtml {
             display:none;
+        }
+        #unsecure {
+            background: yellow;
         }
         </style>
     </head>
     <body>
         <form id="form" onsubmit="return false;">
-            <input style="position:absolute; top:80%; left:5%; width:40%;" type="text" id="userInput" value="https://www.google.com" />
-            <input style="position:absolute; top:50%; left:5%; width:40%;" type="submit" onclick="runOnClick();" />
+            <input type="text" id="userInput" value="http://www.sizmek.com" />
+            <input type="submit" onclick="runOnClick();" />
         </form>
+        <div id="unsecure"></div>
+        <div id="allgood"></div>
         <div id="urlhtml"></div>
-        
         <script type="text/javascript">
             var urlHtml = document.getElementById('urlhtml');
+            var unsecureScripts = document.getElementById('unsecure');
+            var scriptTags = urlHtml.getElementsByTagName('script');
                 //checking if onclick for value in input works
             function otherName() {
                 var input = document.getElementById("userInput").value;
@@ -76,11 +85,11 @@
                                                 // Get rid of them
                                                 //.replace(/<script[^>]+?\/>|<script(.|\s)*?\/script>/gi, '')
                                                 
-                                                .replace(/<img[^>]+?\/>|<img(.|\s)*?\/img>/gi, '')
-                                                .replace(/<meta[^>]+?\/>|<meta(.|\s)*?\/meta>/gi, '')
-                                                .replace(/<meta[^>]+?\/>|<meta(.|\s)*?\/meta>/gi, '')
-                                                .replace(/<a[^>]+?\/>|<a(.|\s)*?\/a>/gi, '')
-                                                .replace(/<ul[^>]+?\/>|<ul(.|\s)*?\/ul>/gi, '')
+                                                // .replace(/<img[^>]+?\/>|<img(.|\s)*?\/img>/gi, '')
+                                                // .replace(/<meta[^>]+?\/>|<meta(.|\s)*?\/meta>/gi, '')
+                                                // .replace(/<meta[^>]+?\/>|<meta(.|\s)*?\/meta>/gi, '')
+                                                // .replace(/<a[^>]+?\/>|<a(.|\s)*?\/a>/gi, '')
+                                                // .replace(/<ul[^>]+?\/>|<ul(.|\s)*?\/ul>/gi, '')
                                         }, 'success');
                                     }
 
@@ -126,25 +135,39 @@
             }
 
             function securityCheck() {
-                var scriptTags = urlHtml.getElementsByTagName('script');
-
                 for (i = 0; i < scriptTags.length; i++) {
                     if (scriptTags[i].hasAttribute('src')) {
                         switch (scriptTags[i].getAttribute('src').slice(0,5).toLowerCase()) {
                             case "http:":
-                                console.log("IMPORTANT")
+                                var newDiv = document.createElement('div');
+                                    newDiv.id = 'script' + i;
+                                var appendedDiv = unsecureScripts.appendChild(newDiv);
+                                appendedDiv.innerHTML = scriptTags[i].getAttribute('src');
+                                console.log("IMPORTANT");
                                 console.log("contain http");
                                 console.log(scriptTags[i]);
                                 break;
                             case "https":
+                                var newDiv = document.createElement('div');
+                                    newDiv.id = 'secured' + i;
+                                var appendedDiv = document.getElementById('allgood').appendChild(newDiv);
+                                appendedDiv.innerHTML = "<i>also contains secure</i>";
                                 console.log("contain SSL https");
                                 console.log(scriptTags[i]);
                                 break;
                             default:
+                                var newDiv = document.createElement('div');
+                                    newDiv.id = 'secured' + i;
+                                var appendedDiv = document.getElementById('allgood').appendChild(newDiv);
+                                appendedDiv.innerHTML = "<i>also contains local reference</i>";
                                 console.log("does not contain http");
                                 console.log(scriptTags[i]);
                         }
                     } else {
+                        var newDiv = document.createElement('div');
+                            newDiv.id = 'secured' + i;
+                        var appendedDiv = document.getElementById('allgood').appendChild(newDiv);
+                        appendedDiv.innerHTML = "<i>also contains inline</i>";
                         console.log("contains inline javascript");
                         console.log(scriptTags[i]);
                     }
