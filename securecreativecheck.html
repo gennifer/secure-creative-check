@@ -5,42 +5,91 @@
         <style>
         body {
             font-family: 'Questrial', sans-serif;
+        }  
+        #allgood {
+            color: green;
+            padding-top:10px;
         }
         #calls {
             font-weight: bold;
         }
-        #urlhtml {
-            display:none;
+        #headline {
+            font-size: 24px;
+            text-align: center;
+            font-weight: bold;
         }
-        #allgood {
-            color: green;
+        #form {
+            text-align: center;
+            padding:10px;
+        }
+        #results {
+            margin: auto;
+            width: 60%;
+            background-color: #e6e6e6;
+            border: 1px solid black;
+            display: none;
+        }
+        #submitBtn {
+            border : solid 1px yellow;
+            border-radius : 3px;
+            moz-border-radius : 3px;
+            font-size : 14px;
+            color : yellow;
+            padding : auto;
+            background-color : blue;
+        }
+        #submitBtn:hover {
+            border : solid 1px blue;
+            border-radius : 3px;
+            moz-border-radius : 3px;
+            font-size : 14px;
+            color : blue;
+            padding : auto;
+            background-color : yellow;
+        }
+        #userInput {
+            width: 50%;
         }
         #unsecure {
             color: red;
             font-size: 16px;
         }
+        #unsecure > div {
+            padding-top: 10px;
+        }
         </style>
+        <title>Secure Creative Check</title>
     </head>
     <body>
+        <div id="headline">Secure Creative Check (beta)</div>
         <form id="form" onsubmit="return false;">
-            <input type="text" id="userInput" value="http://www.sizmek.com" />
+            <label>Web Address: 
+                <input type="text" id="userInput" value="http://www.sizmek.com" placeholder="http://www.sizmek.com" />
+            </label>
             <input type="submit" id="submitBtn" />
         </form>
-        <div id="allcode"></div>
-        <div id="unsecure"></div>
-        <div id="allgood"></div>
-        <div id="urlhtml"></div>
+        <div id="results">
+            <div id="unsecure"></div>
+            <div id="allgood"></div>
+        </div>
         <script type="text/javascript">
+            formSubmitted = false;
+            // jquery.xdomainajax.js  ------ from padolsey
+            function submitForm() {
+                //has the form been submitted before?
 
-            //below variables references for runOnClick function
-            
-            //checking if onclick for value in input works
-            function otherName() {
-                var input = document.getElementById("userInput").value;
-                alert(input);
+                if( formSubmitted == true ){
+                    alert("This form has already been submitted! Please refresh!");
+                    
+                } else {
+                // Set the formSubmitted flag
+                formSubmitted = true;
+                runOnClick();
+                }
             }
-                // jquery.xdomainajax.js  ------ from padolsey
+
             function runOnClick() {
+
                 var your_url = document.getElementById("userInput").value;
 
                 jQuery.ajax = (function(_ajax){
@@ -122,139 +171,83 @@
                         var text = [];
                         var text = res.responseText;
                             // then you can manipulate your text as you wish
-                            //append to a div on the page
-                        //create a dummydom instead of appending html
-                        console.log(text);
                         
+                        //create a dummydom instead of appending html
                         dummyDom = document.createElement('html');
                         dummyDom.innerHTML = text;
                         console.log(dummyDom);
                         scriptTags = dummyDom.getElementsByTagName('script');
                         //console.log(typeof allScripts[4].getAttribute('src'));
                         console.log(scriptTags);
-                        urlHtml = document.getElementById('urlhtml');
                         unsecureScripts = document.getElementById('unsecure');
-
-                        function securityCheck() {
-                            for (i = 0; i < scriptTags.length; i++) {
-                                if (scriptTags[i].hasAttribute('src')) {
-                                    // check for protocol relative URL
-                                    if (scriptTags[i].getAttribute('src').slice(0,2) === "//") {
-                                        a = i + 1;
-                                        var newDiv = document.createElement('div');
-                                            newDiv.id = 'script' + i;
-                                        var x = scriptTags[i].getAttribute('src');
-                                        var appendedDiv = unsecureScripts.appendChild(newDiv);
-                                            appendedDiv.innerHTML = "<i>Script Tag " + a + " contains protocol relative URL, please validate secure address: </i> <b>" + scriptTags[i].getAttribute('src') + "</b>";
-                                        console.log("IMPORTANT");
-                                        console.log("contains protocol relative url");
-                                        console.log(scriptTags[i].getAttribute('src'));
-                                    }
-                                    // check for https
-                                    else if (scriptTags[i].getAttribute('src').slice(0,5).toLowerCase() === "https") {
-                                        a = i + 1;
-                                        var newDiv = document.createElement('div');
-                                            newDiv.id = 'SSLsecured' + i;
-                                        var appendedDiv = document.getElementById('allgood').appendChild(newDiv);
-                                            appendedDiv.innerHTML = "<i>Script Tag " + a + " good to go, contains secure reference: " + scriptTags[i].getAttribute('src');
-                                        console.log(typeof scriptTags[i].getAttribute('src'));
-                                        console.log("contain SSL https");
-                                        console.log(scriptTags[i].getAttribute('src'));
-                                    // check for http
-                                    } else if (scriptTags[i].getAttribute('src').slice(0,5).toLowerCase() === "http:") {
-                                        a = i + 1;
-                                        var newDiv = document.createElement('div');
-                                            newDiv.id = 'script' + i;
-                                        var x = scriptTags[i].getAttribute('src');
-                                        var appendedDiv = unsecureScripts.appendChild(newDiv);
-                                            appendedDiv.innerHTML = "<i>Script Tag " + a + " contains insecure src reference: </i> <b>" + scriptTags[i].getAttribute('src') + "</b>";
-                                        console.log("IMPORTANT");
-                                        console.log("contains insecure http");
-                                        console.log(scriptTags[i].getAttribute('src'));
-                                    }
-                                    //not specific enough by using switch so changed to if/else if
-                                    // switch (scriptTags[i].getAttribute('src').slice(0,5).toLowerCase()) {
-                                    //     case "http:":
-                                    //         var newDiv = document.createElement('div');
-                                    //             newDiv.id = 'script' + i;
-                                    //         var x = scriptTags[i].getAttribute('src');
-                                    //         var appendedDiv = unsecureScripts.appendChild(newDiv);
-                                    //             appendedDiv.innerHTML = "test";
-                                    //         console.log(typeof scriptTags[i].getAttribute('src'));
-                                    //         console.log("IMPORTANT");
-                                    //         console.log("contain http");
-                                    //         console.log(scriptTags[i].getAttribute('src'));
-                                    //         break;
-                                    //     case "https":
-                                    //         var newDiv = document.createElement('div');
-                                    //             newDiv.id = 'SSLsecured' + i;
-                                    //         var appendedDiv = document.getElementById('allgood').appendChild(newDiv);
-                                    //         appendedDiv.innerHTML = "contains secure reference";
-                                    //         console.log(typeof scriptTags[i].getAttribute('src'));
-                                    //         console.log("contain SSL https");
-                                    //         console.log(scriptTags[i].getAttribute('src'));
-                                    //         break;
-                                                                                
-                                    //     default:
-                                    //         var newDiv = document.createElement('div');
-                                    //             newDiv.id = 'nohttp' + i;
-                                    //         var appendedDiv = document.getElementById('allgood').appendChild(newDiv);
-                                    //         appendedDiv.innerHTML = "<i>contains no http " + scriptTags[i].getAttribute('src') + "</i>";
-                                    //         console.log(typeof scriptTags[i].getAttribute('src'));
-                                    //         console.log("does not contain http");
-                                    //         console.log(scriptTags[i].getAttribute('src'));
-
-                                    // contains local reference
-                                    else {
-                                        a = i + 1;
-                                        var newDiv = document.createElement('div');
-                                            newDiv.id = 'script' + i;
-                                        var x = scriptTags[i].getAttribute('src');
-                                        var appendedDiv = unsecureScripts.appendChild(newDiv);
-                                            appendedDiv.innerHTML = "<i>Script Tag " + a + " good to go, contains local reference: " + scriptTags[i].getAttribute('src');
-                                        console.log("IMPORTANT");
-                                        console.log("contains local reference");
-                                        console.log(scriptTags[i].getAttribute('src'));
-                                    }
-                                } else {
-                                    a = i + 1;
-                                    var newDiv = document.createElement('div');
-                                        newDiv.id = 'inline' + i;
-                                    var appendedDiv = document.getElementById('allgood').appendChild(newDiv);
-                                        appendedDiv.innerHTML = "<i>Script Tag " + a + " contains inline javascript</i>";
-                                    console.log(typeof scriptTags[i]);
-                                    console.log("contains inline javascript");
-                                    console.log(scriptTags[i]);
-                                }
-                            }
-                        }
-                        securityCheck();
-                        
-                        /*var urlHtml = document.getElementById('urlhtml');
-                        var temp = document.createElement('div');
-
-                        temp.innerHTML = text;
-                        while (temp.firstChild) {
-                            urlHtml.appendChild(temp.firstChild);
-                        }
-
-
-                        securityCheck();
-
-                        while(urlHtml.firstChild){
-                            urlHtml.removeChild(urlHtml.firstChild);
-                        }*/
-
-                        
+                        securityCheck();       
                     }
                 });
             }
 
-            document.getElementById("submitBtn").addEventListener("click", runOnClick);
+            function securityCheck() {
+                for (i = 0; i < scriptTags.length; i++) {
+                    if (scriptTags[i].hasAttribute('src')) {
+                        // check for protocol relative URL
+                        if (scriptTags[i].getAttribute('src').slice(0,2) === "//") {
+                            a = i + 1;
+                            var newDiv = document.createElement('div');
+                                newDiv.id = 'script' + i;
+                            var x = scriptTags[i].getAttribute('src');
+                            var appendedDiv = unsecureScripts.appendChild(newDiv);
+                                appendedDiv.innerHTML = "<i>Script Tag " + a + " contains protocol relative URL, please validate secure address: </i> <b>" + scriptTags[i].getAttribute('src') + "</b>";
+                            console.log("IMPORTANT");
+                            console.log("contains protocol relative url");
+                            console.log(scriptTags[i].getAttribute('src'));
+                        }
+                        // check for https
+                        else if (scriptTags[i].getAttribute('src').slice(0,5).toLowerCase() === "https") {
+                            a = i + 1;
+                            var newDiv = document.createElement('div');
+                                newDiv.id = 'SSLsecured' + i;
+                            var appendedDiv = document.getElementById('allgood').appendChild(newDiv);
+                                appendedDiv.innerHTML = "<i>Script Tag " + a + " good to go, contains secure reference: " + scriptTags[i].getAttribute('src');
+                            console.log(typeof scriptTags[i].getAttribute('src'));
+                            console.log("contain SSL https");
+                            console.log(scriptTags[i].getAttribute('src'));
+                        // check for http
+                        } else if (scriptTags[i].getAttribute('src').slice(0,5).toLowerCase() === "http:") {
+                            a = i + 1;
+                            var newDiv = document.createElement('div');
+                                newDiv.id = 'script' + i;
+                            var x = scriptTags[i].getAttribute('src');
+                            var appendedDiv = unsecureScripts.appendChild(newDiv);
+                                appendedDiv.innerHTML = "<i>Script Tag " + a + " contains insecure src reference: </i> <b>" + scriptTags[i].getAttribute('src') + "</b>";
+                            console.log("IMPORTANT");
+                            console.log("contains insecure http");
+                            console.log(scriptTags[i].getAttribute('src'));
+                        }
+                        else {
+                            a = i + 1;
+                            var newDiv = document.createElement('div');
+                                newDiv.id = 'script' + i;
+                            var x = scriptTags[i].getAttribute('src');
+                            var appendedDiv = unsecureScripts.appendChild(newDiv);
+                                appendedDiv.innerHTML = "<i>Script Tag " + a + " good to go, contains local reference: " + scriptTags[i].getAttribute('src');
+                            console.log("IMPORTANT");
+                            console.log("contains local reference");
+                            console.log(scriptTags[i].getAttribute('src'));
+                        }
+                    } else {
+                        a = i + 1;
+                        var newDiv = document.createElement('div');
+                            newDiv.id = 'inline' + i;
+                        var appendedDiv = document.getElementById('allgood').appendChild(newDiv);
+                            appendedDiv.innerHTML = "<i>Script Tag " + a + " contains inline javascript</i>";
+                        console.log(typeof scriptTags[i]);
+                        console.log("contains inline javascript");
+                        console.log(scriptTags[i]);
+                    }
+                }
+                document.getElementById("results").style.display = "block";
+            }
 
-            
-
-
+            document.getElementById("submitBtn").addEventListener("click", submitForm);
         </script>
     </body>
 </html>
