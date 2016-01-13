@@ -1,0 +1,54 @@
+body {
+    font-family: 'Questrial', sans-serif;
+}  
+#allgood {
+    color: green;
+    padding-top:10px;
+}
+#calls {
+    font-weight: bold;
+}
+#headline {
+    font-size: 24px;
+    text-align: center;
+    font-weight: bold;
+}
+#form {
+    text-align: center;
+    padding:10px;
+}
+#results {
+    margin: auto;
+    width: 60%;
+    background-color: #e6e6e6;
+    border: 1px solid black;
+    display: none;
+}
+#submitBtn {
+    border : solid 1px yellow;
+    border-radius : 3px;
+    moz-border-radius : 3px;
+    font-size : 14px;
+    color : yellow;
+    padding : auto;
+    background-color : blue;
+}
+#submitBtn:hover {
+    border : solid 1px blue;
+    border-radius : 3px;
+    moz-border-radius : 3px;
+    font-size : 14px;
+    color : blue;
+    padding : auto;
+    background-color : yellow;
+}
+#userInput {
+    width: 50%;
+}
+#unsecure {
+    color: red;
+    font-size: 16px;
+}
+#unsecure > div {
+    padding-top: 10px;
+}
